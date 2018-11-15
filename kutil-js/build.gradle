@@ -1,50 +1,24 @@
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
-        mavenLocal()
-        maven { url "https://dl.bintray.com/kotlin/kotlinx" }
     }
-//
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
     }
 }
+
+apply plugin: 'kotlin2js'
+apply plugin: 'kotlin-platform-js'
 
 repositories {
-    maven { url "https://kotlin.bintray.com/kotlinx" }
     mavenCentral()
-    mavenLocal()
 }
-
-apply plugin: 'kotlin'
-apply plugin: 'kotlin-platform-jvm'
-apply plugin: 'maven-publish'
-
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-//        compile 'org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.5.0'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
     expectedBy project(':')
-
-    testCompile "io.mockk:mockk:1.8.6"
-    testCompile 'org.jetbrains.kotlin:kotlin-test:1.1.0'
-    testCompile('org.jetbrains.spek:spek-api:1.1.5') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
-    testRuntime 'org.junit.platform:junit-platform-launcher:1.0.0'
-    testRuntime('org.jetbrains.spek:spek-junit-platform-engine:1.1.5') {
-        exclude group: 'org.junit.platform'
-        exclude group: 'org.jetbrains.kotlin'
-    }
 }
-compileKotlin.destinationDir = compileJava.destinationDir
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 
 artifactory {
     contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
@@ -82,6 +56,3 @@ publishing {
         }
     }
 }
-
-
-sourceCompatibility = 8

@@ -46,42 +46,5 @@ compileTestKotlin {
 }
 
 
-artifactory {
-    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
-    publish {
-        repository {
-            repoKey = 'gradle-dev-local'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-            maven = true
-
-        }
-        defaults {
-            publications('mavenJava')
-        }
-
-    }
-    resolve {
-        repository {
-            repoKey = 'gradle-dev'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-            maven = true
-
-        }
-    }
-}
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-//            artifact sourceJar
-//            artifact dokkaJavadoc
-//            artifact javadocJar
-        }
-    }
-}
-
 
 sourceCompatibility = 8

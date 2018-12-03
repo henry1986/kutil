@@ -22,6 +22,43 @@ allprojects {
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
     apply plugin: "com.jfrog.artifactory"
+
+    artifactory {
+        contextUrl = "${daiv_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+        publish {
+            repository {
+                repoKey = 'gradle-dev-local'
+                username = "${daiv_user}"
+                password = "${daiv_password}"
+                maven = true
+
+            }
+            defaults {
+                publications('mavenJava')
+            }
+
+        }
+        resolve {
+            repository {
+                repoKey = 'gradle-dev'
+                username = "${daiv_user}"
+                password = "${daiv_password}"
+                maven = true
+
+            }
+        }
+    }
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+
+//            artifact sourceJar
+//            artifact dokkaJavadoc
+//            artifact javadocJar
+            }
+        }
+    }
 }
 
 repositories {
@@ -33,39 +70,3 @@ dependencies {
     testCompile "org.jetbrains.kotlin:kotlin-test-common:$kotlin_version"
 }
 
-artifactory {
-    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
-    publish {
-        repository {
-            repoKey = 'gradle-dev-local'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-            maven = true
-
-        }
-        defaults {
-            publications('mavenJava')
-        }
-
-    }
-    resolve {
-        repository {
-            repoKey = 'gradle-dev'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-            maven = true
-
-        }
-    }
-}
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-//            artifact sourceJar
-//            artifact dokkaJavadoc
-//            artifact javadocJar
-        }
-    }
-}

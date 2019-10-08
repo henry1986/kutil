@@ -20,6 +20,10 @@ class DefaultRegisterer<T : Any>(private val list: MutableList<T> = mutableListO
         list.clear()
     }
 
+    suspend fun suspendEvent(func: suspend T.() -> Unit) {
+        list.forEach { it.func() }
+    }
+
     fun event(func: T.() -> Unit) {
         list.forEach(func)
     }

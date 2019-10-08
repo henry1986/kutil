@@ -19,7 +19,7 @@ apply plugin: 'maven-publish'
 
 allprojects {
     group 'org.daiv.util'
-    version '0.0.4-SNAPSHOT'
+    version '0.0.5-SNAPSHOT'
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'

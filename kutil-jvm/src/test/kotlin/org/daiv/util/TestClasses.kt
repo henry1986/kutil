@@ -1,7 +1,7 @@
 package org.daiv.util
 
-class TestListener {
-    fun event() {}
+interface TestListener {
+    fun event()
 }
 
 class TestRegisterer(private val registerer: DefaultRegisterer<TestListener> = DefaultRegisterer()) :

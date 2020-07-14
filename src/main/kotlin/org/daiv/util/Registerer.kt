@@ -15,9 +15,17 @@ interface RegistererForwarder<T : Any> {
     suspend fun suspendEventForward(func: suspend T.() -> Unit)
 }
 
+interface RegistererHolder<T : Any> : Registerer<T> {
+    val registerer: Registerer<T>
+}
+
 class DefaultRegisterer<T : Any>(private val list: MutableList<T> = mutableListOf()) : Registerer<T>,
+                                                                                       RegistererHolder<T>,
                                                                                        Iterable<T> by list {
     private val registererForwarders = mutableListOf<RegistererForwarder<T>>()
+
+    override val registerer: Registerer<T>
+        get() = this
 
     override fun register(t: T) = list.add(t)
 

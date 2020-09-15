@@ -15,7 +15,7 @@ interface RegistererForwarder<T : Any> {
     suspend fun suspendEventForward(func: suspend T.() -> Unit)
 }
 
-interface RegistererHolder<T : Any> : Registerer<T> {
+interface RegistererHolder<T : Any>  {
     val registerer: Registerer<T>
 }
 

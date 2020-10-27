@@ -42,16 +42,15 @@ fun String.add(string: String, max: Int, i: Int = 0): String {
 
 fun Double.toString(decimals: Int): String {
     val s = toString()
-    val l = s.length
     val indexOf = s.indexOf('.')
-    val missingNulls = l - decimals
-    if (indexOf <missingNulls) {
+    if (indexOf == -1) {
+        return "$s.".add("0", decimals)
+    }
+    val minLength = indexOf + decimals + 1
+    if (minLength < s.length) {
         return round(decimals).toString()
     } else {
-        if(indexOf == -1){
-            return "$s.".add("0", decimals)
-        }
-        return s.add("0", missingNulls)
+        return s.add("0", minLength - s.length)
     }
 }
 //fun Double.toString(decimals: Int): String {

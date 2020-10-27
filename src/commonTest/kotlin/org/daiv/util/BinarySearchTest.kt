@@ -83,4 +83,10 @@ class RoundTest{
         val res = x.toString(2)
         assertEquals("5.00", res)
     }
+    @Test
+    fun toStringRoundTest5(){
+        val x = 5.0
+        val res = x.toString(3)
+        assertEquals("5.000", res)
+    }
 }

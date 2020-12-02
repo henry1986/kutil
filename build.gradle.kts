@@ -2,13 +2,36 @@ import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
 
 val microutils_logging_version = "1.11.2"
 
+buildscript {
+    repositories {
+        maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
+        maven("https://daiv.org/artifactory/gradle-dev-local")
+    }
+    dependencies {
+        classpath("org.daiv.dependency:DependencyHandling:0.0.70")
+    }
+}
+
+
 plugins {
     kotlin("multiplatform") version "1.4.10"
     id("com.jfrog.artifactory") version "4.17.2"
+    id("org.daiv.dependency.VersionsPlugin") version "0.1.3"
     `maven-publish`
 }
+
+val versions = org.daiv.dependency.DefaultDependencyBuilder(org.daiv.dependency.Versions.current())
+
 group = "org.daiv.util"
-version = "0.3.2"
+version = versions.setVersion { kutil }
+
+versionPlugin {
+    versionPluginBuilder = org.daiv.dependency.Versions.versionPluginBuilder {
+        versionMember = { kutil }
+        resetVersion = { copy(kutil = it) }
+    }
+    setDepending(tasks)
+}
 
 repositories {
     mavenCentral()

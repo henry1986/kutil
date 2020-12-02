@@ -21,7 +21,7 @@ interface RegistererHolder<T : Any>  {
 
 class DefaultRegisterer<T : Any>(private val list: MutableList<T> = mutableListOf()) : Registerer<T>,
                                                                                        RegistererHolder<T>,
-                                                                                       Iterable<T> by list {
+                                                                                       List<T> by list {
     private val registererForwarders = mutableListOf<RegistererForwarder<T>>()
 
     override val registerer: Registerer<T>

@@ -5,10 +5,10 @@ val microutils_logging_version = "1.11.2"
 buildscript {
     repositories {
         maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
-        maven("https://daiv.org/artifactory/gradle-dev-local")
+        maven("https://artifactory.daiv.org/artifactory/gradle-dev-local")
     }
     dependencies {
-        classpath("org.daiv.dependency:DependencyHandling:0.0.70")
+        classpath("org.daiv.dependency:DependencyHandling:0.0.119")
     }
 }
 

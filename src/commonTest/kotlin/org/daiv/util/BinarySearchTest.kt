@@ -17,6 +17,13 @@ class BinarySearchByStart {
         val x = list.binarySearchByStart(6) { it }
         assertEquals(2, x)
     }
+
+    @Test
+    fun emptyList(){
+        val list = listOf<Int>()
+        val x = list.binarySearchByStart(9) { it }
+        assertEquals(0, x)
+    }
 }
 
 class BinarySearchByEnd {
@@ -32,6 +39,13 @@ class BinarySearchByEnd {
         val list = listOf(1, 4, 6, 9, 15)
         val x = list.binarySearchByEnd(9) { it }
         assertEquals(4, x)
+    }
+
+    @Test
+    fun emptyList(){
+        val list = listOf<Int>()
+        val x = list.binarySearchByEnd(9) { it }
+        assertEquals(0, x)
     }
 }
 

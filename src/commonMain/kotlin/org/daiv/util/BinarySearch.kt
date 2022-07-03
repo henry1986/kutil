@@ -2,6 +2,7 @@ package org.daiv.util
 
 /**
  * returns the specified index inclusive [key]
+ * if list is empty, 0 is returned
  */
 inline fun <T, K : Comparable<K>> List<T>.binarySearchByStart(key: K?, crossinline selector: (T) -> K?): Int {
     val i = binarySearchBy(key) { selector(it) }
@@ -10,6 +11,7 @@ inline fun <T, K : Comparable<K>> List<T>.binarySearchByStart(key: K?, crossinli
 
 /**
  * returns the specified index inclusive [key]
+ * if list is empty, 0 is returned
  */
 inline fun <T, K : Comparable<K>> List<T>.binarySearchByEnd(key: K?, crossinline selector: (T) -> K?): Int {
     val i = binarySearchBy(key) { selector(it) }

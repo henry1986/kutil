@@ -1,6 +1,5 @@
 package org.daiv.time
 
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -27,6 +26,13 @@ fun Long.isoTimeOffsetWithSystemTimeZone(zoneId: ZoneId = ZoneOffset.systemDefau
 }
 
 actual fun Long.isoTime() = isoTimeOffsetWithSystemTimeZone()
+
+fun Long.isoTimeWithoutMillisWithSystemTimeZone(zoneId: ZoneId = ZoneOffset.systemDefault()):String{
+    return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ssZ").withLocale(
+        Locale.US).withZone(zoneId).format(Instant.ofEpochMilli(this))
+}
+
+actual fun Long.isoTimeWithoutMillis(): String = isoTimeWithoutMillisWithSystemTimeZone()
 
 /**
  * returns epochMilli

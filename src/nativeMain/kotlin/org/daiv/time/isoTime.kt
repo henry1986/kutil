@@ -7,3 +7,7 @@ actual fun Long.isoTime(): String {
 actual fun String.isoTime(): Long {
     TODO("Not yet implemented")
 }
+
+actual fun Long.isoTimeWithoutMillis(): String {
+    TODO("Not yet implemented")
+}

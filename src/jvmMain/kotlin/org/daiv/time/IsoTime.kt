@@ -28,7 +28,7 @@ fun Long.isoTimeOffsetWithSystemTimeZone(zoneId: ZoneId = ZoneOffset.systemDefau
 actual fun Long.isoTime() = isoTimeOffsetWithSystemTimeZone()
 
 fun Long.isoTimeWithoutMillisWithSystemTimeZone(zoneId: ZoneId = ZoneOffset.systemDefault()):String{
-    return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ssZ").withLocale(
+    return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss'Z'").withLocale(
         Locale.US).withZone(zoneId).format(Instant.ofEpochMilli(this))
 }
 

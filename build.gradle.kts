@@ -4,12 +4,11 @@ val microutils_logging_version = "2.1.23"
 
 buildscript {
     repositories {
+        mavenCentral()
         maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
-//        maven("https://artifactory.daiv.org/artifactory/gradle-dev-local")
-        maven("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
     }
     dependencies {
-        classpath("org.daiv.dependency:DependencyHandling:0.1.39")
+        classpath("org.daiv.dependency:DependencyHandling:0.1.42")
     }
 }
 
@@ -81,7 +80,9 @@ kotlin {
         val jvmMain by getting {
             dependencies {
 //                api("io.github.microutils:kotlin-logging:$microutils_logging_version")
-                api("ch.qos.logback:logback-core:1.4.5")
+                api(versions.logbackClassic())
+                api(versions.logbackCore())
+//                api("ch.qos.logback:logback-core:1.4.5")
             }
         }
         val jvmTest by getting {
@@ -156,22 +157,4 @@ publishing {
             credentials(PasswordCredentials::class)
         }
     }
-}
-
-
-artifactory {
-    setContextUrl("${project.findProperty("daiv_contextUrl")}")
-    publish(delegateClosureOf<PublisherConfig> {
-        repository(delegateClosureOf<groovy.lang.GroovyObject> {
-            setProperty("repoKey", "gradle-dev-local")
-            setProperty("username", project.findProperty("daiv_user"))
-            setProperty("password", project.findProperty("daiv_password"))
-            setProperty("maven", true)
-        })
-        defaults(delegateClosureOf<groovy.lang.GroovyObject> {
-            invokeMethod("publications", arrayOf("jvm", "js", "kotlinMultiplatform", "metadata", "linuxX64"))
-            setProperty("publishPom", true)
-            setProperty("publishArtifacts", true)
-        })
-    })
 }

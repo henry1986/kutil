@@ -1,23 +1,25 @@
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
 
-val microutils_logging_version = "1.11.2"
+val microutils_logging_version = "2.1.23"
 
 buildscript {
     repositories {
+        mavenCentral()
         maven { url = uri("https://repo.gradle.org/gradle/libs-releases") }
-        maven("https://artifactory.daiv.org/artifactory/gradle-dev-local")
     }
     dependencies {
-        classpath("org.daiv.dependency:DependencyHandling:0.2.33")
+        classpath("org.daiv.dependency:DependencyHandling:0.2.39")
     }
 }
 
 
 plugins {
-    kotlin("multiplatform") version "1.6.10"
+    kotlin("multiplatform") version "1.7.21"
     id("com.jfrog.artifactory") version "4.17.2"
-    id("org.daiv.dependency.VersionsPlugin") version "0.1.3"
+    id("org.daiv.dependency.VersionsPlugin") version "0.1.4"
     `maven-publish`
+//    id("maven")
+    id("signing")
 }
 
 val versions = org.daiv.dependency.DefaultDependencyBuilder(org.daiv.dependency.Versions.current())
@@ -29,8 +31,9 @@ versionPlugin {
     versionPluginBuilder = org.daiv.dependency.Versions.versionPluginBuilder {
         versionMember = { kutil }
         resetVersion = { copy(kutil = it) }
+        publishTaskName = "publish"
     }
-    setDepending(tasks)
+    setDepending(tasks, "publish")
 }
 
 repositories {
@@ -53,19 +56,19 @@ kotlin {
             }
         }
     }
-    val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
+//    val hostOs = System.getProperty("os.name")
+//    val isMingwX64 = hostOs.startsWith("Windows")
+//    val nativeTarget = when {
+//        hostOs == "Mac OS X" -> macosX64("native")
+//        hostOs == "Linux" -> linuxX64("native")
+//        isMingwX64 -> mingwX64("native")
+//        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+//    }
 
     sourceSets {
-        val commonMain by getting{
+        val commonMain by getting {
             dependencies {
-                api("io.github.microutils:kotlin-logging-common:$microutils_logging_version")
+                api("io.github.microutils:kotlin-logging:$microutils_logging_version")
             }
         }
         val commonTest by getting {
@@ -74,10 +77,12 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val jvmMain by getting{
+        val jvmMain by getting {
             dependencies {
-                api("io.github.microutils:kotlin-logging:$microutils_logging_version")
-                api("ch.qos.logback:logback-classic:1.3.0-alpha4")
+//                api("io.github.microutils:kotlin-logging:$microutils_logging_version")
+                api(versions.logbackClassic())
+                api(versions.logbackCore())
+//                api("ch.qos.logback:logback-core:1.4.5")
             }
         }
         val jvmTest by getting {
@@ -86,9 +91,9 @@ kotlin {
                 implementation("io.mockk:mockk:1.10.0")
             }
         }
-        val jsMain by getting{
+        val jsMain by getting {
             dependencies {
-                api("io.github.microutils:kotlin-logging-js:$microutils_logging_version")
+//                api("io.github.microutils:kotlin-logging-js:$microutils_logging_version")
             }
         }
         val jsTest by getting {
@@ -96,28 +101,60 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
-        val nativeMain by getting{
-            dependencies {
-                api("io.github.microutils:kotlin-logging-linuxx64:$microutils_logging_version")
-            }
-        }
-        val nativeTest by getting
+//        val nativeMain by getting{
+//            dependencies {
+//                api("io.github.microutils:kotlin-logging-linuxx64:$microutils_logging_version")
+//            }
+//        }
+//        val nativeTest by getting
     }
 }
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
+signing {
+    sign(publishing.publications)
+}
 
-artifactory {
-    setContextUrl("${project.findProperty("daiv_contextUrl")}")
-    publish(delegateClosureOf<PublisherConfig> {
-        repository(delegateClosureOf<groovy.lang.GroovyObject> {
-            setProperty("repoKey", "gradle-dev-local")
-            setProperty("username", project.findProperty("daiv_user"))
-            setProperty("password", project.findProperty("daiv_password"))
-            setProperty("maven", true)
-        })
-        defaults(delegateClosureOf<groovy.lang.GroovyObject> {
-            invokeMethod("publications", arrayOf("jvm", "js", "kotlinMultiplatform", "metadata", "linuxX64"))
-            setProperty("publishPom", true)
-            setProperty("publishArtifacts", true)
-        })
-    })
+publishing {
+    publications.withType<MavenPublication> {
+        artifact(javadocJar.get())
+        pom {
+            packaging = "jar"
+            name.set("kutil")
+            description.set("kotlin utils for org.daiv projects")
+            url.set("https://github.com/henry1986/kutil")
+            licenses {
+                license {
+                    name.set("The Apache Software License, Version 2.0")
+                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                }
+            }
+            issueManagement {
+                system.set("Github")
+                url.set("https://github.com/henry1986/kutil/issues")
+            }
+            scm {
+                connection.set("scm:git:https://github.com/henry1986/kutil.git")
+                developerConnection.set("scm:git:https://github.com/henry1986/kutil.git")
+                url.set("https://github.com/henry1986/kutil")
+            }
+            developers {
+                developer {
+                    id.set("henry86")
+                    name.set("Martin Heinrich")
+                    email.set("martin.heinrich.dresden@gmx.de")
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "sonatypeRepository"
+            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            credentials(PasswordCredentials::class)
+        }
+    }
 }
